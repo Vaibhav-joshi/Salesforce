@@ -29,7 +29,7 @@ public with sharing class UniversalTimeConversion {
         return (myOffsetInMins - otherOffsetInMins)*60.0;
     }
     public static Integer getOffsetForGivenTzInMinutes(String inputTzStr){
- 		return inputTzStr != 'GMT' ? (getTzforGivenTzStr(inputTzStr).getOffset(getNowTimeInUtc()) / (1000 * 60)) : 0;
+ 		return (getTzforGivenTzStr(inputTzStr).getOffset(getNowTimeInUtc()) / (1000 * 60));
     }
     public static Datetime getNowTimeInUtc(){
         return System.now();
