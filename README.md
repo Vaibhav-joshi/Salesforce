@@ -1,1 +1,1 @@
-# Salesforce
+This class all required method to be used in salesforce timezone conversion.
