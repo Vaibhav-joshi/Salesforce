@@ -17,20 +17,19 @@ public with sharing class UniversalTimeConversion {
     public static String getTodayDayForGivenTz(String inputTz){
         return getNowTimeForGivenTz(inputTz).format('EEEE');
     }
-    public static void iAmXHoursAheadOfGivenTz(String inputTz){
- 
+    public static double iAmXHoursAheadOfGivenTz(String inputTz){
+ 		return iAmXMinutesAheadOfGivenTz(inputTz)/60.0;
     }
-    public static void iAmXMinutesAheadOfGivenTz(String inputTz){
- 
+    public static Double iAmXMinutesAheadOfGivenTz(String inputTz){
+ 		return iAmXSecondsAheadOfGivenTz(inputTz)/60;
     }
-    public static void iAmXSecondsAheadOfGivenTz(String inputTz){
- 
+    public static Double iAmXSecondsAheadOfGivenTz(String inputTz){
+ 		Integer myOffsetInMins = getOffsetForGivenTzInMinutes(getTzCurrentUser().toString());
+        Integer otherOffsetInMins = getOffsetForGivenTzInMinutes(inputTz);
+        return (myOffsetInMins - otherOffsetInMins)*60.0;
     }
     public static Integer getOffsetForGivenTzInMinutes(String inputTzStr){
  		return inputTzStr != 'GMT' ? (getTzforGivenTzStr(inputTzStr).getOffset(getNowTimeInUtc()) / (1000 * 60)) : 0;
-    }
-    public static void getMyOffsetDiffForGivenTz(String inputTz){
- 
     }
     public static Datetime getNowTimeInUtc(){
         return System.now();
