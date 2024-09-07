@@ -4,7 +4,7 @@ public with sharing class UniversalTimeConversion {
     }
     public static void getNowTimeForGivenTz(String inputTz){
  
-    }
+    } 
     public static void getThisTimeInGivenTz(Datetime inputDt, String inputTz){
  
     }
