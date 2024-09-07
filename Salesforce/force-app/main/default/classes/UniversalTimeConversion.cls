@@ -3,21 +3,19 @@ public with sharing class UniversalTimeConversion {
 
     }
     public static DateTime getNowTimeForGivenTz(String inputTzStr){
-        Datetime utcNow = getNowTimeInUtc();
-        system.debug('~~getNowTimeForGivenTz - '+utcNow.addMinutes(getOffsetForGivenTzInMinutes(inputTzStr)));
-        return utcNow.addMinutes(getOffsetForGivenTzInMinutes(inputTzStr));
+        return getNowTimeInUtc().addMinutes(getOffsetForGivenTzInMinutes(inputTzStr));
     } 
-    public static void getThisTimeInGivenTz(Datetime inputDt, String inputTz){
- 
+    public static Datetime getThisTimeInGivenTz(Datetime inputDt, String inputTzStr){
+        return inputDt.addMinutes(getOffsetForGivenTzInMinutes(getTzCurrentUser().toString()));
     }
-    public static void getThisTimeInUtc(Datetime inputDt, String inputTz){
- 
+    public static Datetime getThisTimeInUtc(Datetime inputDt, String inputTzStr){
+        return getThisTimeInGivenTz(inputDt, inputTzStr).addMinutes(-getOffsetForGivenTzInMinutes(inputTzStr));
     }
-    public static void getTodayDateGivenTz(String inputTz){
- 
+    public static Date getTodayDateGivenTz(String inputTz){
+ 		return getNowTimeForGivenTz(inputTz).date();
     }
-    public static void getTodayDayForGivenTz(String inputTz){
- 
+    public static String getTodayDayForGivenTz(String inputTz){
+        return getNowTimeForGivenTz(inputTz).format('EEEE');
     }
     public static void iAmXHoursAheadOfGivenTz(String inputTz){
  
