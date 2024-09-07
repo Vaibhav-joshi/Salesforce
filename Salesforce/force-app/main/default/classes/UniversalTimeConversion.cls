@@ -1,7 +1,5 @@
 public with sharing class UniversalTimeConversion {
-    public UniversalTimeConversion() {
-
-    }
+    
     public static DateTime getNowTimeForGivenTz(String inputTzStr){
         return getNowTimeInUtc().addMinutes(getOffsetForGivenTzInMinutes(inputTzStr));
     } 
