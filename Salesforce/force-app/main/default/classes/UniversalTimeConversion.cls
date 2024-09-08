@@ -37,5 +37,5 @@ public with sharing class UniversalTimeConversion {
     }
     public static TimeZone getTzforGivenTzStr(String inputTzStr){
         return Timezone.getTimeZone(inputTzStr);
-    }
+    } 
 }
