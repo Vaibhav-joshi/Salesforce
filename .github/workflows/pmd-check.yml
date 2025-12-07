@@ -22,8 +22,11 @@ jobs:
       # Step 2: Install PMD
       - name: Install PMD
         run: |
-          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-bin-7.0.0.zip
-          unzip pmd-bin-7.0.0.zip
+          curl -s https://api.github.com/repos/pmd/pmd/releases/latest \
+          | grep "browser_download_url.*pmd-bin" \
+          | cut -d '"' -f 4 \
+          | wget -i -
+          unzip pmd-bin-*.zip
 
       # Step 3: Run PMD on changed files
       - name: Run PMD
