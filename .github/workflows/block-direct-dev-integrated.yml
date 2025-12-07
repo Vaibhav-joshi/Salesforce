@@ -1,25 +1,25 @@
-# .github/workflows/block-direct-dev-int.yml
-name: Block Direct Commits to dev-integrated
+# # .github/workflows/block-direct-dev-int.yml
+# name: Block Direct Commits to dev-integrated
 
-on:
-  push:
-    branches:
-      - dev-integrated
+# on:
+#   push:
+#     branches:
+#       - dev-integrated
 
-jobs:
-  block-dev-int:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fail if pushing directly to dev-integrated
-        run: |
-          echo "Event: ${{ github.event_name }}"
-          echo "Actor: ${{ github.actor }}"
+# jobs:
+#   block-dev-int:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Fail if pushing directly to dev-integrated
+#         run: |
+#           echo "Event: ${{ github.event_name }}"
+#           echo "Actor: ${{ github.actor }}"
 
-          # Allow pushes that come from PR merges or automation
-          if [ "${{ github.actor }}" = "web-flow" ] || [ "${{ github.actor }}" = "github-actions" ]; then
-            echo "✅ Push is part of a PR merge or automation. Allowed."
-            exit 0
-          fi
+#           # Allow pushes that come from PR merges or automation
+#           if [ "${{ github.actor }}" = "web-flow" ] || [ "${{ github.actor }}" = "github-actions" ]; then
+#             echo "✅ Push is part of a PR merge or automation. Allowed."
+#             exit 0
+#           fi
 
-          echo "❌ Direct commits/pushes to 'dev-integrated' are not allowed. Please create a feature branch."
-          exit 1
+#           echo "❌ Direct commits/pushes to 'dev-integrated' are not allowed. Please create a feature branch."
+#           exit 1
