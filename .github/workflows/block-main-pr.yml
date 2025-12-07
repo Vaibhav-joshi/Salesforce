@@ -3,13 +3,31 @@ name: Block PRs to Main
 on:
   pull_request:
     branches:
-      - main   # Trigger only when PR targets main
+      - main # Trigger only when PR targets main
 
 jobs:
   block-main-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Fail if PR targets main
+      # Step 1: Fetch PR author's role dynamically from GitHub API
+      - name: Check PR author permissions
+        id: perm
         run: |
-          echo "Pull requests to 'main' are not allowed."
-          exit 1
+          echo "Checking permissions for ${{ github.actor }} on ${{ github.repository }}"
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission)
+          echo "API response: $response"
+          role=$(echo "$response" | jq -r '.permission')
+          echo "permission=$role" >> $GITHUB_OUTPUT
+          echo "Role for ${{ github.actor }}: $role"
+
+      # Step 3: Fail if PR targets main (unless admin)
+      - name: Block non-admin PRs
+        run: |
+          if [ "${{ steps.perm.outputs.permission }}" = "admin" ]; then
+            echo "Bypassing block: ${{ github.actor }} is an admin."
+            exit 0
+          else
+            echo "❌ Pull requests to 'main' are not allowed for non-admins."
+            exit 1
+          fi
