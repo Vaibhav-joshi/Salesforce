@@ -2,6 +2,11 @@ name: Quality Check
 
 on:
   pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - "**"
 
 jobs:
   call-eslint:
