@@ -1,0 +1,44 @@
+name: Jest Check
+
+on:
+  workflow_call: # allows this workflow to be invoked from another workflow
+  workflow_dispatch: # optional manual trigger from the Actions tab
+
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Capture the runner's Node.js version
+      - name: Get Node.js version
+        id: node_version
+        run: echo "version=$(node -v | sed 's/v//')" >> $GITHUB_OUTPUT
+
+      # Step 3: Setup Node.js using that version
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.node_version.outputs.version }}
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install # or npm ci if you have package-lock.json
+
+      # Step 5: Get changed files relevant to Jest (JS/TS test files)
+      - name: Get changed test files
+        id: changed-tests
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} \
+            | grep -E '\.(test|spec)\.(js|ts|jsx|tsx)$' || true)" >> $GITHUB_OUTPUT
+
+      # Step 6: Run Jest tests only if test files were changed
+      - name: Run Jest tests
+        if: ${{ steps.changed-tests.outputs.files != '' }}
+        run: |
+          echo "Running Jest on changed test files:"
+          echo "${{ steps.changed-tests.outputs.files }}"
+          npx sfdx-lwc-jest -- --ci --passWithNoTests ${{ steps.changed-tests.outputs.files }}

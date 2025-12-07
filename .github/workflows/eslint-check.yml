@@ -1,0 +1,38 @@
+name: ESLint Check
+
+on:
+  workflow_call:
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 1: Capture the runner's Node.js version
+      - name: Get Node.js version
+        id: node_version
+        run: echo "version=$(node -v | sed 's/v//')" >> $GITHUB_OUTPUT
+
+      # Step 2: Setup Node.js using that version
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.node_version.outputs.version }}
+
+      - name: Install dependencies
+        run: npm install # use npm ci if you have package-lock.json
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} | grep '\.js$' || true)" >> $GITHUB_OUTPUT
+
+      - name: Run ESLint on changed files
+        if: ${{ steps.changed-files.outputs.files != '' }}
+        run: |
+          echo "Linting changed files:"
+          echo "${{ steps.changed-files.outputs.files }}"
+          npx eslint ${{ steps.changed-files.outputs.files }}

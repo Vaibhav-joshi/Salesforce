@@ -1,0 +1,20 @@
+name: Quality Check
+
+on:
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  ESLINT:
+    uses: ./.github/workflows/eslint-check.yml
+
+  PRETTIER:
+    uses: ./.github/workflows/prettier-check.yml
+
+  PMD:
+    uses: ./.github/workflows/pmd-check.yml
+
+  JEST:
+    uses: ./.github/workflows/jest-check.yml
