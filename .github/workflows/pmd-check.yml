@@ -26,6 +26,7 @@ jobs:
         run: |
           latest_url=$(curl -s https://api.github.com/repos/pmd/pmd/releases/latest \
             | grep "browser_download_url.*pmd-dist-.*-bin.zip" \
+            | grep -v ".asc" \
             | cut -d '"' -f 4)
           wget "$latest_url"
           unzip $(basename "$latest_url")
