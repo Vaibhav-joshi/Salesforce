@@ -23,6 +23,15 @@ jobs:
           echo "Normalized username: $USERNAME_NORM"
           echo "Expected prefix: $EXPECTED_PREFIX"
 
+          # Exemptions: allow dev-integrated, main, release/* without checks
+          if [[ "$BRANCH_NAME_NORM" == "dev.integrated" ]] || \
+             [[ "$BRANCH_NAME_NORM" == "main" ]] || \
+             [[ "$BRANCH_NAME_NORM" == release/* ]]; then
+            echo "✅ Branch '$BRANCH_NAME' is exempt from naming convention."
+            exit 0
+          fi
+
+          # Enforce convention for feature branches
           if [[ "$BRANCH_NAME_NORM" != ${EXPECTED_PREFIX}* ]]; then
             echo "❌ Branch name '$BRANCH_NAME' must start with '${EXPECTED_PREFIX}' (normalized check)"
             exit 1
