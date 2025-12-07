@@ -28,6 +28,17 @@ jobs:
       - name: Install dependencies
         run: npm install # or npm ci if you have package-lock.json
 
-      # Step 5: Run Jest tests (forward flags correctly to Jest)
+      # Step 5: Get changed files relevant to Jest (JS/TS test files)
+      - name: Get changed test files
+        id: changed-tests
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} \
+            | grep -E '\.(test|spec)\.(js|ts|jsx|tsx)$' || true)" >> $GITHUB_OUTPUT
+
+      # Step 6: Run Jest tests only if test files were changed
       - name: Run Jest tests
-        run: npm run test:unit -- --ci --passWithNoTests
+        if: ${{ steps.changed-tests.outputs.files != '' }}
+        run: |
+          echo "Running Jest on changed test files:"
+          echo "${{ steps.changed-tests.outputs.files }}"
+          npx sfdx-lwc-jest -- --ci --passWithNoTests ${{ steps.changed-tests.outputs.files }}
