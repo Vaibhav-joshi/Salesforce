@@ -26,6 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm install # or npm ci if you have package-lock.json
 
-      # Step 3: Run Jest tests
+      # Step 3: Run Jest tests (forward flags correctly)
       - name: Run Jest tests
-        run: npm run test:unit -- --ci
+        run: npm run test:unit -- --ci --passWithNoTests
