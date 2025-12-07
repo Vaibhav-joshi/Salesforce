@@ -1,0 +1,14 @@
+name: Quality Check
+
+on:
+  pull_request:
+
+jobs:
+  call-eslint:
+    uses: ./.github/workflows/eslint-check.yml
+
+#   call-pmd:
+#     uses: ./.github/workflows/pmd-check.yml
+
+#   call-prettier:
+#     uses: ./.github/workflows/prettier-check.yml
