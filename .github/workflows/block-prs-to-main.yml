@@ -1,4 +1,3 @@
-# .github/workflows/block-prs-to-main.yml
 name: Block PRs to Main
 
 on:
@@ -28,3 +27,4 @@ jobs:
           else
             echo "❌ Pull requests to 'main' are not allowed for non-admins."
             exit 1
+          fi
