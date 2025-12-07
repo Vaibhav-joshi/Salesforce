@@ -1,0 +1,27 @@
+name: Enforce Branch Naming Convention
+
+on:
+  pull_request:   # Trigger for all PRs, regardless of target branch
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name against GitHub username
+        run: |
+          echo "Branch being validated: ${{ github.head_ref }}"
+          echo "GitHub username: ${{ github.event.pull_request.user.login }}"
+
+          BRANCH_NAME="${{ github.head_ref }}"
+          USERNAME="${{ github.event.pull_request.user.login }}"
+
+          # Expect branch name to start with feature/<username>/
+          EXPECTED_PREFIX="feature/${USERNAME}/"
+
+          if [[ "$BRANCH_NAME" != ${EXPECTED_PREFIX}* ]]; then
+            echo "❌ Branch name '$BRANCH_NAME' must start with '${EXPECTED_PREFIX}'"
+            exit 1
+          fi
+
+          echo "✅ Branch name '$BRANCH_NAME' follows the convention."
