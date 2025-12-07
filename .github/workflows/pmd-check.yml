@@ -1,0 +1,36 @@
+name: PMD Check
+
+on:
+  workflow_call:
+  workflow_dispatch: # optional manual trigger
+
+jobs:
+  pmd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 1: Get changed files (Apex classes + triggers + other supported languages)
+      - name: Get changed files
+        id: changed-files
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} \
+            | grep -E '\.(cls|trigger|java|js|ts|xml|html)$' || true)" >> $GITHUB_OUTPUT
+
+      # Step 2: Install PMD
+      - name: Install PMD
+        run: |
+          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-bin-7.0.0.zip
+          unzip pmd-bin-7.0.0.zip
+
+      # Step 3: Run PMD on changed files
+      - name: Run PMD
+        if: ${{ steps.changed-files.outputs.files != '' }}
+        run: |
+          echo "Running PMD on changed files:"
+          echo "${{ steps.changed-files.outputs.files }}"
+          ./pmd-bin-7.0.0/bin/pmd check -d "${{ steps.changed-files.outputs.files }}" \
+            -R rulesets/apex/quickstart.xml,rulesets/java/quickstart.xml,rulesets/javascript/quickstart.xml \
+            -f text
