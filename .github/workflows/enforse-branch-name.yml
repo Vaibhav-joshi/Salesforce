@@ -1,29 +1,30 @@
 name: Enforce Branch Naming Convention
 
 on:
-  pull_request:   # Trigger for all PRs, regardless of target branch
+  pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   check-branch-name:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate branch name against GitHub username (case-insensitive)
+      - name: Validate branch name against GitHub username (normalized)
         run: |
-          echo "Branch being validated: ${{ github.head_ref }}"
-          echo "GitHub username: ${{ github.event.pull_request.user.login }}"
-
           BRANCH_NAME="${{ github.head_ref }}"
           USERNAME="${{ github.event.pull_request.user.login }}"
 
-          # Convert both to lowercase for comparison
-          BRANCH_NAME_LOWER=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]')
-          USERNAME_LOWER=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]')
+          # Normalize both: lowercase + replace hyphens with dots
+          BRANCH_NAME_NORM=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/-/./g')
+          USERNAME_NORM=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]' | sed 's/-/./g')
 
-          EXPECTED_PREFIX="feature/${USERNAME_LOWER}/"
+          EXPECTED_PREFIX="feature/${USERNAME_NORM}/"
 
-          if [[ "$BRANCH_NAME_LOWER" != ${EXPECTED_PREFIX}* ]]; then
-            echo "❌ Branch name '$BRANCH_NAME' must start with '${EXPECTED_PREFIX}' (case-insensitive check)"
+          echo "Normalized branch name: $BRANCH_NAME_NORM"
+          echo "Normalized username: $USERNAME_NORM"
+          echo "Expected prefix: $EXPECTED_PREFIX"
+
+          if [[ "$BRANCH_NAME_NORM" != ${EXPECTED_PREFIX}* ]]; then
+            echo "❌ Branch name '$BRANCH_NAME' must start with '${EXPECTED_PREFIX}' (normalized check)"
             exit 1
           fi
 
