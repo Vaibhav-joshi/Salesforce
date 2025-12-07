@@ -1,31 +1,33 @@
 name: Jest Check
 
 on:
-  workflow_call:
-  workflow_dispatch: # optional manual trigger
+  workflow_call: # allows this workflow to be invoked from another workflow
+  workflow_dispatch: # optional manual trigger from the Actions tab
 
 jobs:
   jest:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 1: Capture the runner's Node.js version
+      # Step 2: Capture the runner's Node.js version
       - name: Get Node.js version
         id: node_version
         run: echo "version=$(node -v | sed 's/v//')" >> $GITHUB_OUTPUT
 
-      # Step 2: Setup Node.js using that version
+      # Step 3: Setup Node.js using that version
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ steps.node_version.outputs.version }}
 
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm install # or npm ci if you have package-lock.json
 
-      # Step 3: Run Jest tests (forward flags correctly)
+      # Step 5: Run Jest tests (forward flags correctly to Jest)
       - name: Run Jest tests
         run: npm run test:unit -- --ci --passWithNoTests
