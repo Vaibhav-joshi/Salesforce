@@ -4,16 +4,14 @@ on:
   pull_request:
     branches:
       - "**"
-  push:
-    branches:
-      - "**"
+  workflow_dispatch: # 👈 manual trigger added here
 
 jobs:
   call-eslint:
     uses: ./.github/workflows/eslint-check.yml
 
-  #   call-pmd:
-  #     uses: ./.github/workflows/pmd-check.yml
-
   call-prettier:
     uses: ./.github/workflows/prettier-check.yml
+
+  # call-pmd:
+  #   uses: ./.github/workflows/pmd-check.yml
