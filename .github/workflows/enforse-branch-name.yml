@@ -8,7 +8,7 @@ jobs:
   check-branch-name:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate branch name against GitHub username
+      - name: Validate branch name against GitHub username (case-insensitive)
         run: |
           echo "Branch being validated: ${{ github.head_ref }}"
           echo "GitHub username: ${{ github.event.pull_request.user.login }}"
@@ -16,11 +16,14 @@ jobs:
           BRANCH_NAME="${{ github.head_ref }}"
           USERNAME="${{ github.event.pull_request.user.login }}"
 
-          # Expect branch name to start with feature/<username>/
-          EXPECTED_PREFIX="feature/${USERNAME}/"
+          # Convert both to lowercase for comparison
+          BRANCH_NAME_LOWER=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]')
+          USERNAME_LOWER=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]')
 
-          if [[ "$BRANCH_NAME" != ${EXPECTED_PREFIX}* ]]; then
-            echo "❌ Branch name '$BRANCH_NAME' must start with '${EXPECTED_PREFIX}'"
+          EXPECTED_PREFIX="feature/${USERNAME_LOWER}/"
+
+          if [[ "$BRANCH_NAME_LOWER" != ${EXPECTED_PREFIX}* ]]; then
+            echo "❌ Branch name '$BRANCH_NAME' must start with '${EXPECTED_PREFIX}' (case-insensitive check)"
             exit 1
           fi
 
