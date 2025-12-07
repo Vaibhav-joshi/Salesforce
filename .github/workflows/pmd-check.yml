@@ -1,0 +1,41 @@
+name: PMD Check
+
+on:
+  workflow_call: # allows this workflow to be invoked from another workflow
+  workflow_dispatch: # optional manual trigger from the Actions tab
+
+jobs:
+  pmd:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Get changed files (Apex classes, triggers, Java, JS, TS, XML, HTML)
+      - name: Get changed files
+        id: changed-files
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} \
+            | grep -i -E '\.(cls|trigger|java|js|ts|xml|html)$' || true)" >> $GITHUB_OUTPUT
+
+      # Step 3: Install the latest PMD release dynamically
+      # This uses GitHub’s API to fetch the latest release asset (pmd-dist-*-bin.zip)
+      - name: Install PMD (latest)
+        run: |
+          latest_url=$(curl -s https://api.github.com/repos/pmd/pmd/releases/latest \
+            | grep "browser_download_url.*pmd-dist-.*-bin.zip" \
+            | grep -v ".asc" \
+            | cut -d '"' -f 4)
+          wget "$latest_url"
+          unzip $(basename "$latest_url")
+
+      # Step 4: Run PMD on changed files with multiple rulesets
+      - name: Run PMD
+        if: ${{ steps.changed-files.outputs.files != '' }}
+        run: |
+          ./pmd-dist-*/bin/pmd check \
+            -d "${{ steps.changed-files.outputs.files }}" \
+            -R rulesets/apex/quickstart.xml,rulesets/java/quickstart.xml,rulesets/javascript/quickstart.xml \
+            -f text
